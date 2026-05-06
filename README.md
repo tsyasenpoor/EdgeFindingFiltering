@@ -81,20 +81,6 @@ void edgeFindingFixpoint(std::vector<Activity>& acts, int C);
 
 Activities are modified in-place. Only `est` fields are updated; `lct`, `p`, and `c` are read-only.
 
-## Bug fix: self-inclusion in improving detection
-
-The §6.2 "Improving Detection" step sets `prec[i] = max(prec[i], est_i + p_i)`. For a **tight** activity (one with zero slack: `est_i + p_i = lct_i`), this pushes `prec[i]` up to `lct_i`, meaning activity `i` itself falls inside its own left cut `LCut(T, prec[i])`. When EF2 then looks up `update(j, c_i)` at `lct_j = prec[i] = lct_i`, the update table entry was built with `i`'s own energy included, causing a self-reinforcing loop that produces infeasible bounds (`est_i > lct_i`) and diverges across iterations.
-
-**Fix** (`edge_finding.cpp`, adjustment phase, EF2 consumption loop): cap the update table lookup at `lct_i − 1` rather than `prec[i]`:
-
-```cpp
-int cap = min(pi, acts[i].lct - 1);
-auto it = upper_bound(vec.begin(), vec.end(),
-                      make_pair(cap, (long long)INF));
-```
-
-This guarantees `i ∉ LCut(T, j)` for any `j` whose `update(j, c_i)` is applied to activity `i`.
-
 ## Test Suite (`tests.cpp`)
 
 Run with `make test`. Each assertion prints `[PASS]` or `[FAIL]`; a summary appears at the end. **All 16 tests pass.**
@@ -119,9 +105,7 @@ Empty input, single activity, slack-rich pair, idempotency at fixpoint, and soun
 | Half-resource follower | `X.est = 4` |
 | Unit fill + follower | `X.est = 3` |
 | Two parallel followers | `X.est = Y.est = 4` |
-| Tight serialized chain (regression) | `A=0 B=2 C=4 X=6` |
-
-The tight serialized chain (`A(0,2,2,2), B(0,4,2,2), C(0,6,2,2), X(0,INF,2,2)`, C=2) is the key regression for the self-inclusion bug: before the fix this diverged; after the fix it converges in one pass to the optimal bound.
+| Tight serialized chain | `A=0 B=2 C=4 X=6` |
 
 ### Section 4: Non-idempotency demonstrations
 
@@ -132,15 +116,3 @@ Edge Finding is not idempotent: a second pass can find tighter bounds using the 
 
 Both fixpoints are sound (`est_i ≤ lct_i` for all `i`).
 
-### Section 5: Scaling — tight chains
-
-Tight serialized chains of `n` full-resource jobs (C=2, `p=2`, `lct=2,4,...`) plus one follower. After the self-inclusion fix, **all chains converge in exactly 1 pass** with the follower pushed to the provably optimal `est = 2n`.
-
-| n  | passes | follower est | optimal |
-|----|--------|-------------|---------|
-| 2  | 1      | 4           | 4       |
-| 3  | 1      | 6           | 6       |
-| 4  | 1      | 8           | 8       |
-| 6  | 1      | 12          | 12      |
-| 12 | 1      | 24          | 24      |
-| 50 | 1      | 100         | 100     |

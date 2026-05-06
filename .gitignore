@@ -9,3 +9,11 @@ cp2009 (1).pdf
 *.o
 *.out
 REPORT.md
+plot_passes.pdf
+plot_passes.png
+plot_runtime_vs_k.pdf
+plot_runtime_vs_k.png
+plot_runtime_vs_n.pdf
+plot_runtime_vs_n.png
+plot.py
+bench
