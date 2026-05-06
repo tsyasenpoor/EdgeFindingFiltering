@@ -8,3 +8,4 @@ cp2009 (1).pdf
 # Object files and build artifacts
 *.o
 *.out
+REPORT.md

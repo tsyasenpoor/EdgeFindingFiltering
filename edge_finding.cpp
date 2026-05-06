@@ -90,9 +90,11 @@ static void adjustment(vector<Activity>& acts, int n, int C,
         auto it_tbl = utbl.find(acts[i].c);
         if (it_tbl == utbl.end()) continue;
         auto& vec = it_tbl->second;
-        // largest lct_j <= pi
+        // largest lct_j strictly less than lct_i (so i is never in its own LCut)
+        // then further capped by prec[i].
+        int cap = min(pi, acts[i].lct - 1);
         auto it = upper_bound(vec.begin(), vec.end(),
-                              make_pair(pi, (long long)INF));
+                              make_pair(cap, (long long)INF));
         if (it == vec.begin()) continue;
         --it;
         long long nv = it->second;
