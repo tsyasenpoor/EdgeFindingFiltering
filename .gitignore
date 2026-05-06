@@ -1,0 +1,10 @@
+# Compiled binaries
+edge_finding
+tests
+
+# Reference PDF
+cp2009 (1).pdf
+
+# Object files and build artifacts
+*.o
+*.out
