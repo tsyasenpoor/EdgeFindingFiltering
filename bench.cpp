@@ -224,6 +224,37 @@ int main(int argc, char** argv) {
         cout << fixed;
         cout << (double)total / trials << " " << mx << "\n";
 
+    } else if (mode == "cascade_passes") {
+        // ./bench cascade_passes m  → passes for cascading chain of depth m
+        // Each stage adds a tight A + near-tight B; total n = 2m+1 activities.
+        // Demonstrates O(m) pass growth on structured instances.
+        int m = stoi(argv[2]);
+        vector<Activity> acts;
+        int offset = 0;
+        for (int i = 0; i < m; i++) {
+            acts.push_back({offset+2, offset+6,  4, 1});
+            acts.push_back({offset+4, offset+10, 2, 1});
+            offset += 8;
+        }
+        acts.push_back({0, INF, 3, 1});
+        int passes = 0;
+        while (edgeFinding(acts, 1) && passes < 500) passes++;
+        cout << passes << "\n";
+
+    } else if (mode == "pass_hist") {
+        // ./bench pass_hist k n trials  → one pass count per line
+        int k      = stoi(argv[2]);
+        int n      = stoi(argv[3]);
+        int trials = stoi(argv[4]);
+        int C      = k + 1;
+        mt19937 rng(42);
+        for (int t = 0; t < trials; t++) {
+            auto acts = gen_random(n, k, C, rng);
+            int passes = 0;
+            while (edgeFinding(acts, C) && passes < 50) passes++;
+            cout << passes << "\n";
+        }
+
     } else if (mode == "diverge") {
         // ./bench diverge n max_passes  → print A.est per pass (buggy)
         int n     = stoi(argv[2]);

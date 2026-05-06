@@ -17,3 +17,4 @@ plot_runtime_vs_n.pdf
 plot_runtime_vs_n.png
 plot.py
 bench
+chain

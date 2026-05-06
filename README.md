@@ -51,6 +51,9 @@ Both trees maintain envelope (`Env`) and energy (`e`) aggregates over leaves sor
 ├── tl_tree.h           # Theta-Lambda tree (segment tree, detection phase)
 ├── main.cpp            # Demo driver (Figures 1, 4, 5 of the paper)
 ├── tests.cpp           # Full test suite (5 sections, PASS/FAIL output)
+├── bench.cpp           # Benchmark driver (runtime, pass-count, and cascade modes)
+├── chain.cpp           # Standalone cascade-chain pass-count experiment
+├── plot.py             # Python script generating benchmark plots (matplotlib)
 └── Makefile
 ```
 
@@ -115,4 +118,20 @@ Edge Finding is not idempotent: a second pass can find tighter bounds using the 
 2. A 6-activity instance at C=1 converges in **2 productive passes** with 9 `est` updates total.
 
 Both fixpoints are sound (`est_i ≤ lct_i` for all `i`).
+
+### Cascading chain: O(n) passes in the worst case
+
+The paper's O(kn log n) bound is **per pass**; the number of fixpoint iterations is left uncharacterized. The cascading chain construction (`chain.cpp`, also available as `./bench cascade_passes m`) demonstrates that the pass count can grow linearly with n.
+
+Each chain of depth m has 2m + 1 activities (m tight "A" activities, m near-tight "B" activities, and one follower X) at C = 1. In pass i, activity B_i gets pushed, which changes the energy envelope enough for the next pass to push B_{i+1} — requiring exactly m + 1 passes total.
+
+| depth m | activities n | passes |
+|---------|-------------|--------|
+| 1 | 3 | 2 |
+| 3 | 7 | 4 |
+| 5 | 11 | 6 |
+| 10 | 21 | 11 |
+| 15 | 31 | 16 |
+
+Pass count follows passes = ½n + ½ exactly, giving O(n) fixpoint iterations and O(kn² log n) total work in the worst case.
 
