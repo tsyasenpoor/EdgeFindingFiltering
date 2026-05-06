@@ -23,11 +23,12 @@ using clk = chrono::high_resolution_clock;
 
 // ---------- instance generators ----------
 
-// k distinct capacity values, n activities, resource cap C.
-// Activities are randomly spread so propagation actually fires.
+// k distinct capacity values (1..k), n activities, resource cap C = k+1.
+// Using C = k+1 is the tightest valid choice: it allows all k capacity values
+// while ensuring no single activity monopolises the resource (c_max = k < C).
 static vector<Activity> gen_random(int n, int k, int C, mt19937& rng) {
     vector<int> caps;
-    for (int i = 0; i < k; i++) caps.push_back(i + 1);          // 1..k, C = k+1 or bigger
+    for (int i = 0; i < k; i++) caps.push_back(i + 1);          // 1..k
     vector<Activity> acts;
     acts.reserve(n);
     uniform_int_distribution<int> cap_dist(0, k - 1);
