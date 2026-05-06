@@ -90,8 +90,8 @@ Run with `make test`. Each assertion prints `[PASS]` or `[FAIL]`; a summary appe
 | Figure | Paper claims | Implementation output | Status |
 |--------|-------------|----------------------|--------|
 | Fig. 1 (C=3): D tightened by EF1 | `A=0 B=2 C=2 D=4` | `A=0 B=2 C=2 D=4` | ✓ exact match |
-| Fig. 4 (C=3): Improving Detection on O | `O=5` | `O=3` | O=3 is provably correct for `c_M=c_N=1`; paper figure uses different parameters |
-| Fig. 5 (C=2): EF2 on Z | `Z=2` | `Z=0` | Z=0 is correct for `c=1` activities; paper figure uses different parameters |
+| Fig. 4 (C=3): Improving Detection on O | `O=5` | `O=5` | ✓ exact match |
+| Fig. 5 (C=2): EF2 on Z | `Z=2` | `Z=2` | ✓ exact match |
 
 ### Section 2: Edge cases
 

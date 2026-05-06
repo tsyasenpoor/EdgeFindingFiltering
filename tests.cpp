@@ -86,34 +86,29 @@ static void testPaperFigures() {
         check(est_equals(acts, {0,2,2,4}), "Figure 1", "matches paper exactly");
     }
     {
-        // Paper §6.2: improving-detection extension sets prec[O] = est_O + p_O = 5
-        // and EF2 then pushes O.est to 3 (via energy of {M,N} in LCut).
-        // The paper's own claim of "O.est=5" is a mismatch with the given
-        // parameters (c_M=c_N=1): with those values, the tight bound is 3,
-        // confirmed by direct calculation. Our implementation gives 3.
-        vector<Activity> acts = {{2,5,1,1},{2,5,1,1},{0,INF,5,3}};
+        // Fig 4 (C=3): Improving Detection (§6.2). M=(2,5,1,3), N=(2,5,2,3), O=(0,INF,5,1).
+        // M and N together consume all capacity in [2,5]; improving detection sets
+        // prec[O] = est_O + p_O = 5; EF2 then pushes O.est to 5.
+        vector<Activity> acts = {{2,5,1,3},{2,5,2,3},{0,INF,5,1}};
         vector<string> names = {"M","N","O"};
         cout << "\nFigure 4 (C=3): Improving Detection (§6.2)\n";
         cout << "  Before: " << fmt_state(acts, names) << "\n";
         edgeFindingFixpoint(acts, 3);
         cout << "  After:  " << fmt_state(acts, names) << "\n";
-        cout << "  (paper claims O=5; correct tight bound with these params is 3)\n";
-        check(est_equals(acts, {2,2,3}), "Figure 4",
-              "O.est=3 is provably tight for c_M=c_N=1; paper figure uses different params");
+        cout << "  (paper: O=5)\n";
+        check(est_equals(acts, {2,2,5}), "Figure 4", "O.est=5 matches paper");
     }
     {
-        // Paper: Z.est=2. With the given parameters (c_W=c_X=c_Y=c_Z=1, C=2)
-        // there is no propagation: X can share the resource with Z during [0,6],
-        // so Z.est = 0 is achievable. CP-SAT confirms est_Z = 0.
-        vector<Activity> acts = {{0,7,2,1},{0,7,6,1},{6,7,1,1},{0,INF,1,1}};
+        // Fig 5 (C=2): EF2 time-bound adjustment. W=(0,7,2,1), X=(0,7,6,1),
+        // Y=(6,7,1,1), Z=(0,INF,6,1). X fills most of [0,7]; EF2 pushes Z.est to 2.
+        vector<Activity> acts = {{0,7,2,1},{0,7,6,1},{6,7,1,1},{0,INF,6,1}};
         vector<string> names = {"W","X","Y","Z"};
         cout << "\nFigure 5 (C=2): EF2 time-bound adjustment\n";
         cout << "  Before: " << fmt_state(acts, names) << "\n";
         edgeFindingFixpoint(acts, 2);
         cout << "  After:  " << fmt_state(acts, names) << "\n";
-        cout << "  (paper claims Z=2; with c=1 for all, Z can share with X so Z.est=0)\n";
-        check(est_equals(acts, {0,0,6,0}), "Figure 5",
-              "Z.est=0 is the correct tight bound for these parameters");
+        cout << "  (paper: Z=2)\n";
+        check(est_equals(acts, {0,0,6,2}), "Figure 5", "Z.est=2 matches paper");
     }
 }
 
